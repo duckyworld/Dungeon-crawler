@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixel Dungeon Worlds</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="titleOverlay" class="title-overlay" aria-label="Title screen">
+    <div class="title-scene" aria-hidden="true">
+      <span class="ruin ruin-left"></span>
+      <span class="ruin ruin-right"></span>
+      <span class="title-door"></span>
+      <span class="title-torch torch-left"></span>
+      <span class="title-torch torch-right"></span>
+    </div>
+    <div class="title-panel">
+      <h1>Pixel Dungeon Worlds</h1>
+      <p>A fairytale dungeon with no bottom. Start weak, survive the first floor, and earn every impossible thing later.</p>
+      <div id="titleSlots" class="title-slots" aria-label="Save slots">
+        <button type="button" data-slot="1">Slot 1<span>Empty</span></button>
+        <button type="button" data-slot="2">Slot 2<span>Empty</span></button>
+        <button type="button" data-slot="3">Slot 3<span>Empty</span></button>
+      </div>
+      <div class="title-actions">
+        <button id="continueButton" type="button">Continue</button>
+        <button id="newGameButton" type="button">New Game</button>
+        <button id="loadButton" type="button">Load Game</button>
+        <button id="settingsButton" type="button">Settings</button>
+        <button id="creditsButton" type="button">Credits</button>
+        <button id="quitButton" type="button">Quit</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="game-shell">
+    <section class="game-panel" aria-label="Pixel Dungeon Worlds game">
+      <canvas id="game" width="1280" height="720"></canvas>
+      <div class="top-menu" aria-label="Game menus">
+        <button id="characterButton" class="menu-icon character-icon" type="button" title="Character"><span>Character</span></button>
+        <button id="inventoryButton" class="menu-icon inventory-icon" type="button" title="Inventory"><span>Inventory</span></button>
+        <button id="skillsButton" class="menu-icon skills-icon" type="button" title="Skills"><span>Skills</span></button>
+        <button id="questsButton" class="menu-icon quests-icon" type="button" title="Quests"><span>Quests</span></button>
+        <button id="bestiaryButton" class="menu-icon bestiary-icon" type="button" title="Bestiary"><span>Bestiary</span></button>
+        <button id="mapButton" class="menu-icon map-icon" type="button" title="Map"><span>Map</span></button>
+      </div>
+      <div id="message" class="message" aria-live="polite"></div>
+      <div id="interactionPrompt" class="interaction-prompt is-hidden"></div>
+      <div id="eventLog" class="event-log" aria-label="Event log"></div>
+      <div id="floorBanner" class="floor-banner is-hidden"></div>
+      <div id="screenFade" class="screen-fade is-hidden"></div>
+      <div id="abilityHotbar" class="ability-hotbar" aria-label="Ability hotbar">
+        <button type="button" title="Basic Attack: Wooden Sword physical attack.">1<span>Basic</span></button>
+        <button type="button" class="is-locked" title="Locked ability slot">2<span>Locked</span></button>
+        <button type="button" class="is-locked" title="Locked ability slot">3<span>Locked</span></button>
+        <button type="button" class="is-locked" title="Locked ability slot">4<span>Locked</span></button>
+        <button type="button" class="is-locked" title="Locked ability slot">5<span>Locked</span></button>
+      </div>
+      <div id="battlePanel" class="battle-panel is-hidden" aria-live="polite">
+        <div class="battle-info">
+          <strong id="battleEnemy">Enemy Lv. 1</strong>
+          <span id="battlePrompt">Choose an action.</span>
+        </div>
+        <div class="battle-actions">
+          <button id="fightButton" type="button">Fight</button>
+          <button id="abilityButton" type="button">Ability</button>
+          <button id="itemButton" type="button">Item</button>
+          <button id="spareButton" type="button">Spare</button>
+          <button id="runButton" type="button">Run</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="hud" aria-label="Game status">
+      <div class="compact-hero">
+        <div class="hero-portrait" aria-hidden="true">
+          <span></span>
+        </div>
+        <div>
+          <h1>Adventurer</h1>
+          <div class="compact-meta">
+            <span id="compactWorld">Adventurer's Camp</span>
+            <span>Lv <strong id="levelCompact">1</strong></span>
+            <span><strong id="goldCompact">0</strong> Gold</span>
+          </div>
+        </div>
+      </div>
+      <div class="stat-grid">
+        <div>
+          <span>World</span>
+          <strong id="worldName">Forest</strong>
+        </div>
+        <div>
+          <span>Coins</span>
+          <strong id="coins">0</strong>
+        </div>
+        <div>
+          <span>Weapon</span>
+          <strong id="weapon">Wooden Sword (+10)</strong>
+        </div>
+        <div>
+          <span>Armor</span>
+          <strong id="armor">Cloth Armor (+2)</strong>
+        </div>
+        <div>
+          <span>Boss</span>
+          <strong id="bossState">Alive</strong>
+        </div>
+        <div>
+          <span>Miniboss</span>
+          <strong id="minibossState">Ready</strong>
+        </div>
+        <div>
+          <span>Level</span>
+          <strong id="level">1</strong>
+        </div>
+        <div>
+          <span>Quest</span>
+          <strong id="questState">Find a quest</strong>
+        </div>
+        <div>
+          <span>Stats</span>
+          <strong id="stats">ATK 10 DEF 5 SPD 5</strong>
+        </div>
+        <div>
+          <span>Rage</span>
+          <strong id="rage">0</strong>
+        </div>
+        <div>
+          <span>Inventory</span>
+          <strong id="inventory">Small Potion x1</strong>
+        </div>
+      </div>
+
+      <div class="bars">
+        <label>
+          <span>HP <strong id="hpText">100/100</strong></span>
+          <meter id="hpBar" min="0" max="100" value="100"></meter>
+        </label>
+        <label>
+          <span>Mana <strong id="manaText">100/100</strong></span>
+          <meter id="manaBar" min="0" max="100" value="100"></meter>
+        </label>
+        <label>
+          <span>XP <strong id="xpText">0/50</strong></span>
+          <meter id="xpBar" min="0" max="100" value="0"></meter>
+        </label>
+        <label class="boss-meter">
+          <span>Boss HP <strong id="bossText">--</strong></span>
+          <meter id="bossBar" min="0" max="100" value="100"></meter>
+        </label>
+      </div>
+
+      <div class="equipment-slots" aria-label="Equipment and inventory slots">
+        <button type="button" class="slot weapon-slot weapon-shape-training" title="Wooden Sword - Common weapon. +10 physical damage.">I</button>
+        <button type="button" class="slot armor-slot" title="Cloth Armor - Common armor. +2 Defense.">A</button>
+        <button type="button" class="slot potion-slot" title="Small Health Potion - Restores 50 HP. Quantity: 1.">P</button>
+        <button type="button" class="slot locked-slot" title="Locked relic slot">?</button>
+      </div>
+
+      <div class="save-actions" aria-label="Save actions">
+        <button id="saveButton" type="button">Save</button>
+        <button id="newRunButton" type="button">New Run</button>
+      </div>
+    </aside>
+  </main>
+
+  <div id="menuOverlay" class="menu-overlay is-hidden" role="dialog" aria-modal="true" aria-labelledby="menuTitle">
+    <div class="menu-window">
+      <header>
+        <h2 id="menuTitle">Shop</h2>
+        <button id="closeMenu" type="button" aria-label="Close menu">X</button>
+      </header>
+      <p id="menuText"></p>
+      <div id="menuActions" class="menu-actions"></div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
